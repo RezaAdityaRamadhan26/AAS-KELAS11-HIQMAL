@@ -14,8 +14,8 @@ export default function Home() {
         >
           Login
         </Link>
-        <Link href="/dashboard" className="rounded-full border px-6 py-3">
-          Lihat Koleksi
+        <Link href="/register" className="rounded-full border px-6 py-3">
+          Register
         </Link>
       </div>
     </div>

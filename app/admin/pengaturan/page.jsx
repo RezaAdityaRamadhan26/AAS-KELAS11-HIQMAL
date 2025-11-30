@@ -48,117 +48,71 @@ export default function PengaturanPage() {
                 <p>Memuat pengaturan...</p>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Settings Form */}
+                    {/* Left: Settings Form */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-white rounded-xl border p-6">
-                            <h2 className="text-lg font-semibold mb-4">Pengaturan Peminjaman</h2>
-                            <div className="space-y-4">
+                        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                            <h2 className="text-lg font-semibold mb-4 text-[#211C84]">Pengaturan Peminjaman</h2>
+                            <div className="space-y-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Denda Per Hari (Rp)
-                                    </label>
+                                    <label className="block text-sm font-medium text-gray-800 mb-2">Denda Per Hari (Rp)</label>
                                     <input
                                         type="number"
                                         value={settings.fine_per_day}
-                                        onChange={(e) =>
-                                            setSettings({ ...settings, fine_per_day: Number(e.target.value) })
-                                        }
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-2"
+                                        onChange={(e) => setSettings({ ...settings, fine_per_day: Number(e.target.value) })}
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Denda yang dikenakan untuk setiap hari keterlambatan
-                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">Denda yang dikenakan untuk setiap hari keterlambatan.</p>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Maksimal Hari Peminjaman
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={settings.max_borrow_days}
-                                        onChange={(e) =>
-                                            setSettings({ ...settings, max_borrow_days: Number(e.target.value) })
-                                        }
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Durasi maksimal peminjaman buku (default)
-                                    </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-800 mb-2">Maksimal Hari Peminjaman</label>
+                                        <input
+                                            type="number"
+                                            value={settings.max_borrow_days}
+                                            onChange={(e) => setSettings({ ...settings, max_borrow_days: Number(e.target.value) })}
+                                            className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Durasi maksimal peminjaman buku (default).</p>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-800 mb-2">Maksimal Buku Per User</label>
+                                        <input
+                                            type="number"
+                                            value={settings.max_books_per_user}
+                                            onChange={(e) => setSettings({ ...settings, max_books_per_user: Number(e.target.value) })}
+                                            className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Jumlah maksimal buku yang dapat dipinjam per siswa.</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Maksimal Buku Per User
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={settings.max_books_per_user}
-                                        onChange={(e) =>
-                                            setSettings({ ...settings, max_books_per_user: Number(e.target.value) })
-                                        }
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Jumlah maksimal buku yang bisa dipinjam per siswa
-                                    </p>
+                                <div className="pt-2">
+                                    <button
+                                        onClick={handleSave}
+                                        className="bg-[#211C84] hover:bg-[#1a1569] text-white px-6 py-3 rounded-lg text-sm font-semibold w-full md:w-auto"
+                                    >
+                                        Simpan Perubahan
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={handleSave}
-                                    className="bg-indigo-700 hover:bg-indigo-800 text-white px-6 py-2.5 rounded-lg text-sm"
-                                >
-                                    Simpan Perubahan
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-xl border p-6">
-                            <h2 className="text-lg font-semibold mb-4">Informasi Sistem</h2>
-                            <div className="space-y-3">
-                                <InfoRow label="Versi Aplikasi" value="1.0.0" />
-                                <InfoRow label="Database" value="MySQL 8.0" />
-                                <InfoRow label="Framework" value="Next.js 16 (Webpack)" />
-                                <InfoRow label="Last Updated" value="November 2025" />
                             </div>
                         </div>
                     </div>
-
-                    {/* Quick Actions */}
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-xl border p-6">
-                            <h3 className="font-semibold mb-4">Aksi Cepat</h3>
-                            <div className="space-y-3">
-                                <button className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg py-2.5 text-sm font-medium">
-                                    Backup Database
-                                </button>
-                                <button className="w-full bg-green-50 hover:bg-green-100 text-green-700 rounded-lg py-2.5 text-sm font-medium">
-                                    Export Laporan
-                                </button>
-                                <button className="w-full bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg py-2.5 text-sm font-medium">
-                                    Clear Cache
+                    {/* Right: Logout */}
+                    <div className="space-y-6 lg:col-span-1">
+                        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col h-full">
+                            <h3 className="font-semibold mb-4 text-[#211C84]">Aksi Akun</h3>
+                            <p className="text-sm text-gray-600 mb-6">Kelola sesi masuk admin. Gunakan tombol di bawah untuk keluar dari sistem.</p>
+                            <div className="mt-auto">
+                                <button
+                                    onClick={() => signOut({ callbackUrl: "/login" })}
+                                    className="w-full bg-red-600 hover:bg-red-700 text-white rounded-lg py-3 text-sm font-semibold shadow-sm transition-colors"
+                                >
+                                    Keluar Akun
                                 </button>
                             </div>
-                        </div>
-
-                        <div className="bg-white rounded-xl border p-6">
-                            <h3 className="font-semibold mb-4">Akun Admin</h3>
-                            <button
-                                onClick={() => signOut({ callbackUrl: "/login" })}
-                                className="w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg py-2.5 text-sm font-medium"
-                            >
-                                Keluar
-                            </button>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
-    );
-}
-
-function InfoRow({ label, value }) {
-    return (
-        <div className="flex justify-between items-center py-2 border-b last:border-0">
-            <span className="text-sm text-gray-600">{label}</span>
-            <span className="text-sm font-medium">{value}</span>
         </div>
     );
 }

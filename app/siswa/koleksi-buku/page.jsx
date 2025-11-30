@@ -1,6 +1,7 @@
 "use client";
 // Import React dan hook yang dibutuhkan
 import { useState, useEffect } from "react";
+import { BookOpen, AlertCircle } from "lucide-react";
 
 export default function KoleksiPage() {
     // Variabel untuk menyimpan data
@@ -56,27 +57,26 @@ export default function KoleksiPage() {
     }
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6">Koleksi Buku</h1>
+        <div className="p-6 bg-white min-h-screen">
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">Koleksi Buku</h1>
 
             {/* Filter Pencarian */}
             <div className="flex gap-4 mb-6">
                 {/* Input Pencarian */}
                 <input
                     type="text"
-                    placeholder="Cari judul buku..."
+                    placeholder="Cari Buku..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="border rounded px-4 py-2 flex-1"
+                    className="border border-gray-300 rounded-lg px-4 py-2 flex-1 bg-white text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                 />
 
                 {/* Select Genre */}
                 <select
                     value={genre}
                     onChange={(e) => setGenre(e.target.value)}
-                    className="border rounded px-4 py-2"
-                >
-                    <option value="">Semua Genre</option>
+                    className="border border-gray-300 rounded-lg px-4 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]">
+                    <option value="">Semua Kategori</option>
                     <option value="Self-Improvement">Self-Improvement</option>
                     <option value="Programming">Programming</option>
                     <option value="Computer Science">Computer Science</option>
@@ -96,35 +96,35 @@ export default function KoleksiPage() {
 
             {/* Daftar Buku */}
             {!loading && (
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {filteredBooks.length === 0 ? (
                         <p className="col-span-full text-center text-gray-500">Tidak ada buku ditemukan</p>
                     ) : (
                         filteredBooks.map((book) => (
-                            <div key={book.id_buku} className="border rounded-lg p-4 bg-white shadow">
+                            <div key={book.id_buku} className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: 'rgba(33, 28, 132, 0.15)' }}>
                                 {/* Gambar Buku */}
-                                <div className="h-48 bg-gray-200 rounded mb-3 flex items-center justify-center">
-                                    <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                                    </svg>
+                                <div className="h-48 bg-[#D9D9D9] flex items-center justify-center">
+                                    <BookOpen size={64} className="text-gray-400" />
                                 </div>
 
                                 {/* Info Buku */}
-                                <h3 className="font-bold text-sm mb-1">{book.nama_buku}</h3>
-                                <p className="text-xs text-gray-600 mb-1">{book.author}</p>
-                                <p className="text-xs text-indigo-600 mb-3">{book.genre}</p>
+                                <div className="p-4 bg-white">
+                                    <h3 className="font-bold text-sm mb-1 text-gray-900 line-clamp-2">{book.nama_buku}</h3>
+                                    <p className="text-xs text-gray-700 mb-1">{book.author}</p>
+                                    <p className="text-xs text-[#211C84] font-semibold mb-3">{book.genre}</p>
 
-                                {/* Tombol */}
-                                <button
-                                    onClick={() => setSelectedBook(book)}
-                                    disabled={book.status === "dipinjam"}
-                                    className={`w-full py-2 rounded text-sm ${book.status === "dipinjam"
+                                    {/* Tombol */}
+                                    <button
+                                        onClick={() => setSelectedBook(book)}
+                                        disabled={book.status === "dipinjam"}
+                                        className={`w-full py-2 rounded-lg text-sm font-semibold ${book.status === "dipinjam"
                                             ? "bg-gray-300 text-gray-600"
-                                            : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                        }`}
-                                >
-                                    {book.status === "dipinjam" ? "Dipinjam" : "Pinjam"}
-                                </button>
+                                            : "bg-[#211C84] text-white hover:bg-[#1a1569]"
+                                            }`}
+                                    >
+                                        {book.status === "dipinjam" ? "Dipinjam" : "Pinjam Sekarang"}
+                                    </button>
+                                </div>
                             </div>
                         ))
                     )}
@@ -134,48 +134,70 @@ export default function KoleksiPage() {
             {/* Modal Pinjam Buku */}
             {selectedBook && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                        <h2 className="text-xl font-bold mb-4">{selectedBook.nama_buku}</h2>
+                    <div className="bg-white rounded-2xl p-8 max-w-2xl w-full">
+                        <div className="flex gap-6">
+                            {/* Book Cover */}
+                            <div className="w-48 h-64 bg-[#D9D9D9] rounded-lg flex items-center justify-center flex-shrink-0">
+                                <BookOpen size={80} className="text-gray-400" />
+                            </div>
 
-                        {/* Info Detail Buku */}
-                        <div className="mb-3">
-                            <p className="text-sm text-gray-600">Penulis</p>
-                            <p>{selectedBook.author}</p>
-                        </div>
+                            {/* Book Details */}
+                            <div className="flex-1">
+                                <h2 className="text-2xl font-bold mb-4 text-gray-900">{selectedBook.nama_buku}</h2>
 
-                        <div className="mb-3">
-                            <p className="text-sm text-gray-600">Penerbit</p>
-                            <p>{selectedBook.publisher}</p>
-                        </div>
+                                <div className="space-y-3 mb-6">
+                                    <div>
+                                        <p className="text-sm text-gray-800">By {selectedBook.author}</p>
+                                        <p className="text-sm text-gray-800">Penerbit: {selectedBook.publisher}</p>
+                                        <p className="text-sm text-gray-800">Tahun Terbit: {selectedBook.year || 'N/A'}</p>
+                                        <p className="text-sm text-gray-800">Kategori: {selectedBook.genre || 'Non Fiksi'}</p>
+                                        <p className="text-sm text-green-700 font-semibold">Status: Tersedia</p>
+                                        <p className="text-sm text-gray-800">Stok Tersedia: {selectedBook.stock || 8}</p>
+                                    </div>
 
-                        {/* Pilih Durasi Peminjaman */}
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium mb-2">Durasi</label>
-                            <select
-                                value={duration}
-                                onChange={(e) => setDuration(Number(e.target.value))}
-                                className="border rounded px-3 py-2 w-full"
-                            >
-                                <option value={7}>7 hari</option>
-                                <option value={14}>14 hari</option>
-                                <option value={30}>30 hari</option>
-                            </select>
-                        </div>
+                                    <div>
+                                        <p className="text-sm font-semibold mb-1 text-gray-900">Deskripsi:</p>
+                                        <p className="text-sm text-gray-800">
+                                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                                        </p>
+                                    </div>
+                                </div>
 
-                        {/* Tombol Modal */}
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setSelectedBook(null)}
-                                className="flex-1 border rounded py-2"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={handleBorrow}
-                                className="flex-1 bg-indigo-600 text-white rounded py-2"
-                            >
-                                Pinjam
-                            </button>
+                                <div className="mb-6">
+                                    <label className="block text-sm font-semibold mb-2 text-gray-900">Durasi Peminjaman:</label>
+                                    <select
+                                        value={duration}
+                                        onChange={(e) => setDuration(Number(e.target.value))}
+                                        className="border border-gray-300 rounded-lg px-4 py-2 w-full bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
+                                    >
+                                        <option value={7}>7 hari</option>
+                                        <option value={14}>14 hari</option>
+                                        <option value={30}>30 hari</option>
+                                    </select>
+                                </div>
+
+                                <div className="bg-[#FEF9C3] rounded-lg p-4 mb-6">
+                                    <p className="text-sm text-gray-900 flex items-start font-medium">
+                                        <AlertCircle size={20} className="mr-2 flex-shrink-0 text-gray-800" />
+                                        Perhatian: Denda keterlambatan Rp 1.000 per hari. Harap kembalikan buku tepat waktu.
+                                    </p>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleBorrow}
+                                        className="flex-1 bg-[#211C84] text-white rounded-lg py-3 font-semibold hover:bg-[#1a1569] transition-colors"
+                                    >
+                                        Konfirmasi Peminjaman
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedBook(null)}
+                                        className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 font-semibold transition-colors"
+                                    >
+                                        Tutup
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

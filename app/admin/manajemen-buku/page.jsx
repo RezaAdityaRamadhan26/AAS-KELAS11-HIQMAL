@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 
 export default function ManajemenBukuPage() {
     const [books, setBooks] = useState([]);
@@ -34,19 +35,28 @@ export default function ManajemenBukuPage() {
         e.preventDefault();
         const method = editMode ? "PUT" : "POST";
 
-        const res = await fetch("/api/admin/books", {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
+        try {
+            const res = await fetch("/api/admin/books", {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
 
-        if (res.ok) {
-            alert(editMode ? "Buku berhasil diupdate!" : "Buku berhasil ditambahkan!");
-            setShowModal(false);
-            resetForm();
-            loadBooks();
-        } else {
-            alert("Gagal menyimpan buku");
+            const data = await res.json();
+
+            if (res.ok) {
+                alert(editMode ? "Buku berhasil diupdate!" : "Buku berhasil ditambahkan!");
+                setShowModal(false);
+                resetForm();
+                loadBooks();
+            } else {
+                // Tampilkan error message dari server
+                alert(`Gagal menyimpan buku: ${data.error || "Unknown error"}`);
+                console.error("Error response:", data);
+            }
+        } catch (error) {
+            alert("Gagal menyimpan buku: " + error.message);
+            console.error("Error:", error);
         }
     }
 
@@ -106,20 +116,14 @@ export default function ManajemenBukuPage() {
         <div>
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold mb-1">Manajemen Buku</h1>
-                    <p className="text-sm text-gray-600">Kelola koleksi buku perpustakaan</p>
+                    <h1 className="text-2xl font-bold mb-1 text-[#211C84]">Manajemen Buku</h1>
+                    <p className="text-sm text-gray-700">Kelola koleksi buku perpustakaan</p>
                 </div>
                 <button
                     onClick={openAddModal}
-                    className="bg-indigo-700 hover:bg-indigo-800 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2"
+                    className="bg-[#211C84] hover:bg-[#1a1569] text-white px-6 py-3 rounded-lg text-sm font-semibold flex items-center gap-2"
                 >
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            fillRule="evenodd"
-                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
+                    <Plus size={20} />
                     Tambah Buku
                 </button>
             </div>
@@ -127,68 +131,60 @@ export default function ManajemenBukuPage() {
             {loading ? (
                 <p>Memuat data...</p>
             ) : (
-                <div className="bg-white rounded-xl border overflow-hidden">
-                    <div className="p-4 border-b">
-                        <span className="font-medium">Total Buku: {books.length}</span>
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div className="p-4 border-b bg-white">
+                        <span className="font-semibold text-gray-900">Total Buku: {books.length}</span>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm">
-                            <thead className="bg-gray-50 border-b">
+                            <thead className="bg-white">
                                 <tr>
-                                    <th className="text-left p-3 font-medium">Judul Buku</th>
-                                    <th className="text-left p-3 font-medium">Penulis</th>
-                                    <th className="text-left p-3 font-medium">Penerbit</th>
-                                    <th className="text-left p-3 font-medium">Kategori</th>
-                                    <th className="text-left p-3 font-medium">Tahun</th>
-                                    <th className="text-left p-3 font-medium">Status</th>
-                                    <th className="text-left p-3 font-medium">Aksi</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Judul Buku</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Penulis</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Penerbit</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Kategori</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Tahun</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Status</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-gray-800">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="bg-white">
                                 {books.map((b) => (
-                                    <tr key={b.id_buku} className="border-b hover:bg-gray-50">
-                                        <td className="p-3">{b.nama_buku}</td>
-                                        <td className="p-3">{b.author}</td>
-                                        <td className="p-3">{b.publisher}</td>
-                                        <td className="p-3">
-                                            <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs">
+                                    <tr key={b.id_buku} className="border-t border-gray-100 hover:bg-gray-50">
+                                        <td className="px-4 py-3 text-gray-900">{b.nama_buku}</td>
+                                        <td className="px-4 py-3 text-gray-900">{b.author}</td>
+                                        <td className="px-4 py-3 text-gray-900">{b.publisher}</td>
+                                        <td className="px-4 py-3">
+                                            <span className="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md text-xs font-medium">
                                                 {b.genre_buku}
                                             </span>
                                         </td>
-                                        <td className="p-3">{b.tahun_terbit}</td>
-                                        <td className="p-3">
+                                        <td className="px-4 py-3 text-gray-900">{b.tahun_terbit}</td>
+                                        <td className="px-4 py-3">
                                             <span
                                                 className={`px-2 py-1 rounded text-xs font-medium ${b.status === "tersedia"
-                                                        ? "bg-green-100 text-green-700"
-                                                        : "bg-yellow-100 text-yellow-700"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-yellow-100 text-yellow-700"
                                                     }`}
                                             >
                                                 {b.status}
                                             </span>
                                         </td>
-                                        <td className="p-3">
-                                            <div className="flex gap-2">
+                                        <td className="px-4 py-3">
+                                            <div className="flex gap-3">
                                                 <button
                                                     onClick={() => handleEdit(b)}
                                                     className="text-blue-600 hover:text-blue-800"
                                                     title="Edit"
                                                 >
-                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                    </svg>
+                                                    <Pencil size={18} />
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(b.id_buku)}
                                                     className="text-red-600 hover:text-red-800"
                                                     title="Hapus"
                                                 >
-                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>
@@ -202,54 +198,54 @@ export default function ManajemenBukuPage() {
 
             {/* Modal Tambah/Edit Buku */}
             {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold mb-4">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-2xl font-bold mb-6 text-[#211C84]">
                             {editMode ? "Edit Buku" : "Tambah Buku Baru"}
                         </h2>
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid grid-cols-2 gap-5">
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Judul Buku *</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Judul Buku *</label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.nama_buku}
                                         onChange={(e) => setFormData({ ...formData, nama_buku: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Penulis *</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Penulis *</label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.author}
                                         onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Penerbit *</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Penerbit *</label>
                                     <input
                                         type="text"
                                         required
                                         value={formData.publisher}
                                         onChange={(e) => setFormData({ ...formData, publisher: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Genre *</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Genre *</label>
                                     <select
                                         required
                                         value={formData.genre_buku}
                                         onChange={(e) => setFormData({ ...formData, genre_buku: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                     >
                                         <option value="">Pilih Genre</option>
                                         <option value="Self-Improvement">Self-Improvement</option>
@@ -267,50 +263,50 @@ export default function ManajemenBukuPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Tahun Terbit</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Tahun Terbit</label>
                                     <input
                                         type="number"
                                         value={formData.tahun_terbit}
                                         onChange={(e) => setFormData({ ...formData, tahun_terbit: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                         placeholder="2024"
                                     />
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">URL Gambar</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">URL Gambar</label>
                                     <input
                                         type="text"
                                         value={formData.gambar}
                                         onChange={(e) => setFormData({ ...formData, gambar: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                         placeholder="https://..."
                                     />
                                 </div>
 
                                 <div className="col-span-2">
-                                    <label className="block text-sm font-medium mb-1">Deskripsi</label>
+                                    <label className="block text-sm font-semibold text-gray-800 mb-1">Deskripsi</label>
                                     <textarea
-                                        rows={3}
+                                        rows={4}
                                         value={formData.deskripsi}
                                         onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#211C84]"
                                         placeholder="Deskripsi buku..."
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex gap-3 pt-4">
+                            <div className="flex flex-col sm:flex-row gap-3 pt-2">
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="flex-1 border rounded py-2 hover:bg-gray-50"
+                                    className="sm:flex-1 w-full border border-gray-300 rounded-lg py-3 bg-gray-50 hover:bg-gray-100 text-gray-800 font-semibold transition-colors"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 bg-indigo-600 text-white rounded py-2 hover:bg-indigo-700"
+                                    className="sm:flex-1 w-full bg-[#211C84] text-white rounded-lg py-3 hover:bg-[#1a1569] font-semibold shadow-sm transition-colors"
                                 >
                                     {editMode ? "Update" : "Tambah"}
                                 </button>

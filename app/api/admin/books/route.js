@@ -45,21 +45,29 @@ export async function POST(request) {
     );
   }
 
-  const result = await query(
-    `INSERT INTO books (nama_buku, author, publisher, genre_buku, tahun_terbit, gambar, deskripsi, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'tersedia')`,
-    [
-      nama_buku,
-      author,
-      publisher,
-      genre_buku,
-      tahun_terbit || null,
-      gambar || null,
-      deskripsi || null,
-    ]
-  );
+  try {
+    await query(
+      `INSERT INTO books (nama_buku, author, publisher, genre_buku, tahun_terbit, gambar, deskripsi, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'tersedia')`,
+      [
+        nama_buku,
+        author,
+        publisher,
+        genre_buku,
+        tahun_terbit || null,
+        gambar || null,
+        deskripsi || null,
+      ]
+    );
 
-  return NextResponse.json({ success: true, id: result.insertId });
+    return NextResponse.json({ success: true }, { status: 201 });
+  } catch (error) {
+    console.error("Error adding book:", error);
+    return NextResponse.json(
+      { error: "Failed to add book: " + error.message },
+      { status: 500 }
+    );
+  }
 }
 
 // PUT - Update buku
@@ -85,23 +93,31 @@ export async function PUT(request) {
     return NextResponse.json({ error: "Missing id_buku" }, { status: 400 });
   }
 
-  await query(
-    `UPDATE books 
-     SET nama_buku=?, author=?, publisher=?, genre_buku=?, tahun_terbit=?, gambar=?, deskripsi=?
-     WHERE id_buku=?`,
-    [
-      nama_buku,
-      author,
-      publisher,
-      genre_buku,
-      tahun_terbit,
-      gambar,
-      deskripsi,
-      id_buku,
-    ]
-  );
+  try {
+    await query(
+      `UPDATE books 
+       SET nama_buku=?, author=?, publisher=?, genre_buku=?, tahun_terbit=?, gambar=?, deskripsi=?
+       WHERE id_buku=?`,
+      [
+        nama_buku,
+        author,
+        publisher,
+        genre_buku,
+        tahun_terbit,
+        gambar,
+        deskripsi,
+        id_buku,
+      ]
+    );
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error updating book:", error);
+    return NextResponse.json(
+      { error: "Failed to update book: " + error.message },
+      { status: 500 }
+    );
+  }
 }
 
 // DELETE - Hapus buku
@@ -118,20 +134,28 @@ export async function DELETE(request) {
     return NextResponse.json({ error: "Missing id_buku" }, { status: 400 });
   }
 
-  // Cek apakah buku sedang dipinjam
-  const [book] = await query(
-    "SELECT COUNT(*) as count FROM borrows WHERE id_buku=? AND status='ongoing'",
-    [id_buku]
-  );
+  try {
+    // Cek apakah buku sedang dipinjam
+    const [book] = await query(
+      "SELECT COUNT(*) as count FROM borrows WHERE id_buku=? AND status='ongoing'",
+      [id_buku]
+    );
 
-  if (book.count > 0) {
+    if (book.count > 0) {
+      return NextResponse.json(
+        { error: "Tidak bisa menghapus buku yang sedang dipinjam" },
+        { status: 409 }
+      );
+    }
+
+    await query("DELETE FROM books WHERE id_buku=?", [id_buku]);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting book:", error);
     return NextResponse.json(
-      { error: "Tidak bisa menghapus buku yang sedang dipinjam" },
-      { status: 409 }
+      { error: "Failed to delete book: " + error.message },
+      { status: 500 }
     );
   }
-
-  await query("DELETE FROM books WHERE id_buku=?", [id_buku]);
-
-  return NextResponse.json({ success: true });
 }
