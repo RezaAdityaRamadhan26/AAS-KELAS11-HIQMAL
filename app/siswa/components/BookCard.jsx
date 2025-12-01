@@ -2,25 +2,14 @@
 import Image from "next/image";
 
 export default function BookCard({ book, onBorrow }) {
-    // Handle image path: remove /public prefix if exists, or use placeholder
-    let img = "/images/book-placeholder.svg";
-    if (book.gambar) {
-        if (book.gambar.startsWith("http")) {
-            img = book.gambar;
-        } else if (book.gambar.startsWith("/public/")) {
-            img = book.gambar.replace("/public", "");
-        } else if (book.gambar.startsWith("/images/")) {
-            img = book.gambar;
-        } else {
-            // Handle case without leading slash
-            img = book.gambar.startsWith("/") ? book.gambar : `/images/${book.gambar}`;
-        }
-    }
+    // Simpel: cleanup path gambar
+    const getImagePath = () => {
+        if (!book.gambar) return "/images/book-placeholder.svg";
+        if (book.gambar.startsWith("http")) return book.gambar;
+        return book.gambar.replace("/public", "");
+    };
 
-    // Debug log (remove after testing)
-    if (process.env.NODE_ENV === 'development') {
-        console.log('Book:', book.nama_buku, 'Original:', book.gambar, 'Final:', img);
-    }
+    const img = getImagePath();
     return (
         <div className="rounded-xl bg-gray-100 p-4 flex flex-col gap-3 hover:shadow-md transition-shadow">
             <div className="relative w-full h-48 bg-white rounded-lg overflow-hidden">
@@ -30,7 +19,6 @@ export default function BookCard({ book, onBorrow }) {
                     fill
                     sizes="200px"
                     className="object-cover"
-                    unoptimized={!img.startsWith('http')}
                 />
             </div>
             <div className="text-sm font-medium line-clamp-2 min-h-[2.5rem]">{book.nama_buku}</div>

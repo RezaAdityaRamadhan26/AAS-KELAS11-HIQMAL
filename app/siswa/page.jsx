@@ -1,6 +1,7 @@
 "use client";
 // Import React dan hook yang dibutuhkan
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 export default function SiswaPage() {
     // Variabel untuk menyimpan data buku
@@ -81,37 +82,50 @@ export default function SiswaPage() {
                     {filteredBooks.length === 0 ? (
                         <p className="col-span-full text-center text-gray-500">Tidak ada buku ditemukan</p>
                     ) : (
-                        filteredBooks.slice(0, 8).map((book) => (
-                            <div key={book.id_buku} className="border rounded-lg p-4 bg-white shadow">
-                                {/* Gambar buku */}
-                                <div className="h-48 bg-gray-200 rounded mb-3 flex items-center justify-center">
-                                    <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                                    </svg>
-                                </div>
+                        filteredBooks.slice(0, 8).map((book) => {
+                            // Get image path
+                            const getImagePath = () => {
+                                if (!book.gambar) return "/images/book-placeholder.svg";
+                                if (book.gambar.startsWith("http")) return book.gambar;
+                                return book.gambar.replace("/public", "");
+                            };
 
-                                {/* Judul Buku */}
-                                <h3 className="font-bold text-sm mb-1">{book.nama_buku}</h3>
+                            return (
+                                <div key={book.id_buku} className="border rounded-lg p-4 bg-white shadow">
+                                    {/* Gambar buku */}
+                                    <div className="relative h-48 bg-gray-200 rounded mb-3 overflow-hidden">
+                                        <Image
+                                            src={getImagePath()}
+                                            alt={book.nama_buku}
+                                            fill
+                                            sizes="300px"
+                                            className="object-cover"
+                                        />
+                                    </div>
 
-                                {/* Nama Penulis */}
-                                <p className="text-xs text-gray-600 mb-1">{book.author}</p>
+                                    {/* Judul Buku */}
+                                    <h3 className="font-bold text-sm mb-1">{book.nama_buku}</h3>
 
-                                {/* Genre */}
-                                <p className="text-xs text-indigo-600 mb-3">{book.genre}</p>
+                                    {/* Nama Penulis */}
+                                    <p className="text-xs text-gray-600 mb-1">{book.author}</p>
 
-                                {/* Tombol Pinjam */}
-                                <button
-                                    onClick={() => setSelectedBook(book)}
-                                    disabled={book.status === "dipinjam"}
-                                    className={`w-full py-2 rounded text-sm ${book.status === "dipinjam"
+                                    {/* Genre */}
+                                    <p className="text-xs text-indigo-600 mb-3">{book.genre}</p>
+
+                                    {/* Tombol Pinjam */}
+                                    <button
+                                        onClick={() => setSelectedBook(book)}
+                                        disabled={book.status === "dipinjam"}
+                                        className={`w-full py-2 rounded text-sm ${book.status === "dipinjam"
                                             ? "bg-gray-300 text-gray-600"
                                             : "bg-indigo-600 text-white hover:bg-indigo-700"
-                                        }`}
-                                >
-                                    {book.status === "dipinjam" ? "Sedang Dipinjam" : "Pinjam"}
-                                </button>
-                            </div>
-                        ))
+                                            }`}
+                                    >
+                                        {book.status === "dipinjam" ? "Sedang Dipinjam" : "Pinjam"}
+                                    </button>
+                                </div>
+                            )
+                        })
                     )}
                 </div>
             )}
@@ -120,6 +134,22 @@ export default function SiswaPage() {
             {selectedBook && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                        {/* Gambar Buku di Modal */}
+                        <div className="relative h-64 bg-gray-200 rounded mb-4 overflow-hidden">
+                            <Image
+                                src={
+                                    selectedBook.gambar
+                                        ? selectedBook.gambar.startsWith("http")
+                                            ? selectedBook.gambar
+                                            : selectedBook.gambar.replace("/public", "")
+                                        : "/images/book-placeholder.svg"
+                                }
+                                alt={selectedBook.nama_buku}
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+
                         <h2 className="text-xl font-bold mb-4">{selectedBook.nama_buku}</h2>
 
                         {/* Info Buku */}
