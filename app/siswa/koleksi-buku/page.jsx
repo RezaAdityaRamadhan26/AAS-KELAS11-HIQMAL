@@ -2,6 +2,7 @@
 // Import React dan hook yang dibutuhkan
 import { useState, useEffect } from "react";
 import { BookOpen, AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function KoleksiPage() {
     // Variabel untuk menyimpan data
@@ -100,33 +101,53 @@ export default function KoleksiPage() {
                     {filteredBooks.length === 0 ? (
                         <p className="col-span-full text-center text-gray-500">Tidak ada buku ditemukan</p>
                     ) : (
-                        filteredBooks.map((book) => (
-                            <div key={book.id_buku} className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: 'rgba(33, 28, 132, 0.15)' }}>
-                                {/* Gambar Buku */}
-                                <div className="h-48 bg-[#D9D9D9] flex items-center justify-center">
-                                    <BookOpen size={64} className="text-gray-400" />
-                                </div>
+                        filteredBooks.map((book) => {
+                            // Handle image path
+                            let bookImage = "/images/book-placeholder.svg";
+                            if (book.gambar) {
+                                if (book.gambar.startsWith("http")) {
+                                    bookImage = book.gambar;
+                                } else if (book.gambar.startsWith("/public/")) {
+                                    bookImage = book.gambar.replace("/public", "");
+                                } else if (book.gambar.startsWith("/images/")) {
+                                    bookImage = book.gambar;
+                                }
+                            }
 
-                                {/* Info Buku */}
-                                <div className="p-4 bg-white">
-                                    <h3 className="font-bold text-sm mb-1 text-gray-900 line-clamp-2">{book.nama_buku}</h3>
-                                    <p className="text-xs text-gray-700 mb-1">{book.author}</p>
-                                    <p className="text-xs text-[#211C84] font-semibold mb-3">{book.genre}</p>
+                            return (
+                                <div key={book.id_buku} className="rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: 'rgba(33, 28, 132, 0.15)' }}>
+                                    {/* Gambar Buku */}
+                                    <div className="relative h-48 bg-[#D9D9D9] overflow-hidden">
+                                        <Image
+                                            src={bookImage}
+                                            alt={book.nama_buku}
+                                            fill
+                                            sizes="300px"
+                                            className="object-cover"
+                                        />
+                                    </div>
 
-                                    {/* Tombol */}
-                                    <button
-                                        onClick={() => setSelectedBook(book)}
-                                        disabled={book.status === "dipinjam"}
-                                        className={`w-full py-2 rounded-lg text-sm font-semibold ${book.status === "dipinjam"
-                                            ? "bg-gray-300 text-gray-600"
-                                            : "bg-[#211C84] text-white hover:bg-[#1a1569]"
-                                            }`}
-                                    >
-                                        {book.status === "dipinjam" ? "Dipinjam" : "Pinjam Sekarang"}
-                                    </button>
+                                    {/* Info Buku */}
+                                    <div className="p-4 bg-white">
+                                        <h3 className="font-bold text-sm mb-1 text-gray-900 line-clamp-2">{book.nama_buku}</h3>
+                                        <p className="text-xs text-gray-700 mb-1">{book.author}</p>
+                                        <p className="text-xs text-[#211C84] font-semibold mb-3">{book.genre}</p>
+
+                                        {/* Tombol */}
+                                        <button
+                                            onClick={() => setSelectedBook(book)}
+                                            disabled={book.status === "dipinjam"}
+                                            className={`w-full py-2 rounded-lg text-sm font-semibold ${book.status === "dipinjam"
+                                                ? "bg-gray-300 text-gray-600"
+                                                : "bg-[#211C84] text-white hover:bg-[#1a1569]"
+                                                }`}
+                                        >
+                                            {book.status === "dipinjam" ? "Dipinjam" : "Pinjam Sekarang"}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))
+                            )
+                        })
                     )}
                 </div>
             )}
@@ -137,8 +158,23 @@ export default function KoleksiPage() {
                     <div className="bg-white rounded-2xl p-8 max-w-2xl w-full">
                         <div className="flex gap-6">
                             {/* Book Cover */}
-                            <div className="w-48 h-64 bg-[#D9D9D9] rounded-lg flex items-center justify-center flex-shrink-0">
-                                <BookOpen size={80} className="text-gray-400" />
+                            <div className="relative w-48 h-64 bg-[#D9D9D9] rounded-lg overflow-hidden flex-shrink-0">
+                                <Image
+                                    src={
+                                        selectedBook.gambar
+                                            ? selectedBook.gambar.startsWith("http")
+                                                ? selectedBook.gambar
+                                                : selectedBook.gambar.startsWith("/public/")
+                                                    ? selectedBook.gambar.replace("/public", "")
+                                                    : selectedBook.gambar.startsWith("/images/")
+                                                        ? selectedBook.gambar
+                                                        : "/images/book-placeholder.svg"
+                                            : "/images/book-placeholder.svg"
+                                    }
+                                    alt={selectedBook.nama_buku}
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
 
                             {/* Book Details */}

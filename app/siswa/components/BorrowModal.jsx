@@ -6,10 +6,17 @@ export default function BorrowModal({ book, onClose, onConfirm }) {
     const [duration, setDuration] = useState(7);
     if (!book) return null;
 
-    const img =
-        book.gambar && book.gambar.startsWith("http")
-            ? book.gambar
-            : "/images/book-placeholder.svg";
+    // Handle image path: remove /public prefix if exists, or use placeholder
+    let img = "/images/book-placeholder.svg";
+    if (book.gambar) {
+        if (book.gambar.startsWith("http")) {
+            img = book.gambar;
+        } else if (book.gambar.startsWith("/public/")) {
+            img = book.gambar.replace("/public", "");
+        } else if (book.gambar.startsWith("/images/")) {
+            img = book.gambar;
+        }
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
