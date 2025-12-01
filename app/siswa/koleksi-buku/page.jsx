@@ -194,7 +194,7 @@ export default function KoleksiPage() {
                                     <div>
                                         <p className="text-sm font-semibold mb-1 text-gray-900">Deskripsi:</p>
                                         <p className="text-sm text-gray-800">
-                                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                                            {selectedBook.deskripsi || 'Tidak ada deskripsi'}
                                         </p>
                                     </div>
                                 </div>
